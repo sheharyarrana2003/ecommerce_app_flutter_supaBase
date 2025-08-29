@@ -2,16 +2,16 @@ import 'package:e_comerce_app/sign_up%20screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const AuthApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class AuthApp extends StatelessWidget {
+  const AuthApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Auth Demo',
+      title: 'Auth App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         inputDecorationTheme: InputDecorationTheme(
@@ -20,11 +20,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => const LoginScreen(),
-        '/signup': (context) => const SignUpScreen(),
-      },
+      home: const LoginScreen(),
     );
   }
 }
@@ -37,14 +33,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
 
   @override
   void initState() {
     super.initState();
-    // Pre-fill the email for demonstration
-    emailController.text = "madnimoeez35@gmail.com";
+    _emailController.text = "madnimoeez35@gmail.com";
   }
 
   @override
@@ -76,12 +72,15 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 30),
 
               // Email
-              const Text("Email", style: TextStyle(fontSize: 16)),
+              const Text(
+                "Email",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
               const SizedBox(height: 5),
               TextField(
-                controller: emailController,
+                controller: _emailController,
                 decoration: InputDecoration(
-                  hintText: "madnimoeez35@gmail.com",
+                  hintText: "Enter your email",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -90,14 +89,31 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 20),
 
               // Password
-              const Text("Password", style: TextStyle(fontSize: 16)),
+              const Text(
+                "Password",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
               const SizedBox(height: 5),
               TextField(
-                controller: passwordController,
-                obscureText: true,
+                controller: _passwordController,
+                obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
+                  hintText: "Enter your password",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
                   ),
                 ),
               ),
@@ -105,17 +121,29 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 15),
 
               // Forget password
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const Text("Forget your password? "),
-                  GestureDetector(
-                    onTap: () {
-                      // Add forget password functionality
-                    },
-                    child: const Icon(Icons.arrow_right_alt, color: Colors.blue),
+              Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () {
+                    // Add forget password functionality
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Password reset functionality would be implemented here'),
+                      ),
+                    );
+                  },
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Forget your password?",
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                      SizedBox(width: 5),
+                      Icon(Icons.arrow_right_alt, color: Colors.blue, size: 24),
+                    ],
                   ),
-                ],
+                ),
               ),
 
               const SizedBox(height: 30),
@@ -134,7 +162,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           horizontal: 40, vertical: 15),
                     ),
                     onPressed: () {
-                      // Add login functionality
+                      // Login functionality
+                      if (_emailController.text.isEmpty ||
+                          _passwordController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please fill in all fields'),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Login successful!'),
+                          ),
+                        );
+                      }
                     },
                     child: const Text(
                       "Login",
@@ -151,7 +193,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           horizontal: 40, vertical: 15),
                     ),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/signup');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignUpScreen(),
+                        ),
+                      );
                     },
                     child: const Text(
                       "Sign up",
@@ -163,29 +210,37 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 30),
 
-              // Social Login
-              const Center(
-                child: Text("or sign up with social account"),
+              // Divider
+              const Row(
+                children: [
+                  Expanded(child: Divider()),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Text("or sign up with social account"),
+                  ),
+                  Expanded(child: Divider()),
+                ],
               ),
               const SizedBox(height: 20),
 
+              // Social Login
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircleAvatar(
                     radius: 25,
-                    backgroundColor: Colors.white,
+                    backgroundColor: Colors.grey[100],
                     child: Image.network(
-                      "https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png",
+                      "https://cdn-icons-png.flaticon.com/512/300/300221.png",
                       height: 30,
                     ),
                   ),
                   const SizedBox(width: 30),
                   CircleAvatar(
                     radius: 25,
-                    backgroundColor: Colors.white,
+                    backgroundColor: Colors.grey[100],
                     child: Image.network(
-                      "https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png",
+                      "https://cdn-icons-png.flaticon.com/512/5968/5968764.png",
                       height: 30,
                     ),
                   ),
